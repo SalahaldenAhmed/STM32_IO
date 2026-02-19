@@ -92,14 +92,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  int delay = 0 ;
+
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
+	  if ( HAL_GetTick()-delay >= 500){
+		  delay = HAL_GetTick();
 	  HAL_GPIO_TogglePin(GPIOA ,GPIO_PIN_7 ) ;
-
-		  HAL_Delay (500);
+	  }
 
   }
   /* USER CODE END 3 */
