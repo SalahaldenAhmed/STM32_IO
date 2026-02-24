@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0000400c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000760f  00000000  00000000  00004035  2**0
+ 12 .debug_info   00007619  00000000  00000000  00004035  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000146f  00000000  00000000  0000b644  2**0
+ 13 .debug_abbrev 00001498  00000000  00000000  0000b64e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000928  00000000  00000000  0000cab8  2**3
+ 14 .debug_aranges 00000928  00000000  00000000  0000cae8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000712  00000000  00000000  0000d3e0  2**0
+ 15 .debug_rnglists 00000712  00000000  00000000  0000d410  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00016626  00000000  00000000  0000daf2  2**0
+ 16 .debug_macro  00016626  00000000  00000000  0000db22  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00009236  00000000  00000000  00024118  2**0
+ 17 .debug_line   00009239  00000000  00000000  00024148  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00084249  00000000  00000000  0002d34e  2**0
+ 18 .debug_str    00084249  00000000  00000000  0002d381  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000b1597  2**0
+ 19 .comment      00000043  00000000  00000000  000b15ca  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000025b8  00000000  00000000  000b15dc  2**2
+ 20 .debug_frame  000025b8  00000000  00000000  000b1610  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000008a  00000000  00000000  000b3b94  2**0
+ 21 .debug_line_str 0000008a  00000000  00000000  000b3bc8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -4775,47 +4775,47 @@ HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef *htim,
  8001aec:	40000800 	.word	0x40000800
 
 08001af0 <main>:
-  /**
-    * @brief  The application entry point.
-    * @retval int
-    */
-  int main(void)
-  {
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
  8001af0:	b580      	push	{r7, lr}
  8001af2:	b086      	sub	sp, #24
  8001af4:	af00      	add	r7, sp, #0
-    /* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-    /* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
  8001af6:	f7fe fb29 	bl	800014c <HAL_Init>
-    /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-    /* USER CODE END Init */
+  /* USER CODE END Init */
 
-    /* Configure the system clock */
-    SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
  8001afa:	f000 f865 	bl	8001bc8 <SystemClock_Config>
-    /* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-    /* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-    /* Initialize all configured peripherals */
-    MX_GPIO_Init();
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
  8001afe:	f000 f91f 	bl	8001d40 <MX_GPIO_Init>
-    MX_TIM4_Init();
+  MX_TIM4_Init();
  8001b02:	f000 f8a7 	bl	8001c54 <MX_TIM4_Init>
-    /* USER CODE BEGIN 2 */
+  /* USER CODE BEGIN 2 */
     HAL_TIM_PWM_Start(&htim4 , TIM_CHANNEL_4);
  8001b06:	210c      	movs	r1, #12
  8001b08:	482c      	ldr	r0, [pc, #176]	@ (8001bbc <main+0xcc>)
  8001b0a:	f7ff fab7 	bl	800107c <HAL_TIM_PWM_Start>
-    /* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
     int hartbit = 0;
  8001b0e:	2300      	movs	r3, #0
  8001b10:	617b      	str	r3, [r7, #20]
