@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "string.h"
+#include "stdio.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -104,17 +106,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+char msg [50];
       if (HAL_UART_Receive(&huart1, &rx_data, 1, 10) == HAL_OK)
       {
           if (rx_data == 'a')
           {
+        	  sprintf(msg,"a is pressed LED Tggle\r\n");
               HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
+              HAL_UART_Transmit(&huart1,(uint8_t*)msg,strlen(msg),100);
           }
           else if (rx_data == 'b')
           {
-
+        	  sprintf(msg,"b is pressed LED Tggle\r\n");
               HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
+              HAL_UART_Transmit(&huart1,(uint8_t*)msg,strlen(msg),100);
+
           }
       }
       /* USER CODE END WHILE */
