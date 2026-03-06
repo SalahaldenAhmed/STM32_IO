@@ -14018,7 +14018,6 @@ int main(void)
   osKernelInitialize();
  8004aec:	f7fc feac 	bl	8001848 <osKernelInitialize>
 
-  /* creation of myMutex01 */
   myMutex01Handle = osMutexNew(&myMutex01_attributes);
  8004af0:	4814      	ldr	r0, [pc, #80]	@ (8004b44 <main+0x6c>)
  8004af2:	f7fc ff9e 	bl	8001a32 <osMutexNew>
@@ -14304,7 +14303,7 @@ void TASK_1(void *argument)
   /* USER CODE BEGIN TASK_1 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004cb8:	4b10      	ldr	r3, [pc, #64]	@ (8004cfc <TASK_1+0x4c>)
  8004cba:	681b      	ldr	r3, [r3, #0]
  8004cbc:	f04f 31ff 	mov.w	r1, #4294967295	@ 0xffffffff
@@ -14316,7 +14315,7 @@ void TASK_1(void *argument)
  8004cca:	490d      	ldr	r1, [pc, #52]	@ (8004d00 <TASK_1+0x50>)
  8004ccc:	480d      	ldr	r0, [pc, #52]	@ (8004d04 <TASK_1+0x54>)
  8004cce:	f7fc fba3 	bl	8001418 <HAL_UART_Transmit>
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
  8004cd2:	2005      	movs	r0, #5
  8004cd4:	f7fc fe92 	bl	80019fc <osDelay>
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"SALAHALDEN\r\n", 12, 100);
@@ -14325,7 +14324,7 @@ void TASK_1(void *argument)
  8004cdc:	490a      	ldr	r1, [pc, #40]	@ (8004d08 <TASK_1+0x58>)
  8004cde:	4809      	ldr	r0, [pc, #36]	@ (8004d04 <TASK_1+0x54>)
  8004ce0:	f7fc fb9a 	bl	8001418 <HAL_UART_Transmit>
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
  8004ce4:	4b05      	ldr	r3, [pc, #20]	@ (8004cfc <TASK_1+0x4c>)
  8004ce6:	681b      	ldr	r3, [r3, #0]
  8004ce8:	4618      	mov	r0, r3
@@ -14333,7 +14332,7 @@ void TASK_1(void *argument)
 	  osDelay(500);
  8004cee:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4
  8004cf2:	f7fc fe83 	bl	80019fc <osDelay>
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004cf6:	bf00      	nop
  8004cf8:	e7de      	b.n	8004cb8 <TASK_1+0x8>
  8004cfa:	bf00      	nop
@@ -14356,7 +14355,7 @@ void TASK_2(void *argument)
   /* USER CODE BEGIN TASK_2 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004d14:	4b10      	ldr	r3, [pc, #64]	@ (8004d58 <TASK_2+0x4c>)
  8004d16:	681b      	ldr	r3, [r3, #0]
  8004d18:	f04f 31ff 	mov.w	r1, #4294967295	@ 0xffffffff
@@ -14368,7 +14367,7 @@ void TASK_2(void *argument)
  8004d26:	490d      	ldr	r1, [pc, #52]	@ (8004d5c <TASK_2+0x50>)
  8004d28:	480d      	ldr	r0, [pc, #52]	@ (8004d60 <TASK_2+0x54>)
  8004d2a:	f7fc fb75 	bl	8001418 <HAL_UART_Transmit>
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
  8004d2e:	2005      	movs	r0, #5
  8004d30:	f7fc fe64 	bl	80019fc <osDelay>
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"LO!\r\n", 5, 100);
@@ -14377,7 +14376,7 @@ void TASK_2(void *argument)
  8004d38:	490a      	ldr	r1, [pc, #40]	@ (8004d64 <TASK_2+0x58>)
  8004d3a:	4809      	ldr	r0, [pc, #36]	@ (8004d60 <TASK_2+0x54>)
  8004d3c:	f7fc fb6c 	bl	8001418 <HAL_UART_Transmit>
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
  8004d40:	4b05      	ldr	r3, [pc, #20]	@ (8004d58 <TASK_2+0x4c>)
  8004d42:	681b      	ldr	r3, [r3, #0]
  8004d44:	4618      	mov	r0, r3
@@ -14385,7 +14384,7 @@ void TASK_2(void *argument)
 	  osDelay(500);
  8004d4a:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4
  8004d4e:	f7fc fe55 	bl	80019fc <osDelay>
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004d52:	bf00      	nop
  8004d54:	e7de      	b.n	8004d14 <TASK_2+0x8>
  8004d56:	bf00      	nop
@@ -14408,7 +14407,7 @@ void TASK_3(void *argument)
   /* USER CODE BEGIN TASK_3 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004d70:	4b10      	ldr	r3, [pc, #64]	@ (8004db4 <TASK_3+0x4c>)
  8004d72:	681b      	ldr	r3, [r3, #0]
  8004d74:	f04f 31ff 	mov.w	r1, #4294967295	@ 0xffffffff
@@ -14420,7 +14419,7 @@ void TASK_3(void *argument)
  8004d82:	490d      	ldr	r1, [pc, #52]	@ (8004db8 <TASK_3+0x50>)
  8004d84:	480d      	ldr	r0, [pc, #52]	@ (8004dbc <TASK_3+0x54>)
  8004d86:	f7fc fb47 	bl	8001418 <HAL_UART_Transmit>
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
  8004d8a:	2005      	movs	r0, #5
  8004d8c:	f7fc fe36 	bl	80019fc <osDelay>
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"NE\r\n", 4, 100);
@@ -14429,7 +14428,7 @@ void TASK_3(void *argument)
  8004d94:	490a      	ldr	r1, [pc, #40]	@ (8004dc0 <TASK_3+0x58>)
  8004d96:	4809      	ldr	r0, [pc, #36]	@ (8004dbc <TASK_3+0x54>)
  8004d98:	f7fc fb3e 	bl	8001418 <HAL_UART_Transmit>
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
  8004d9c:	4b05      	ldr	r3, [pc, #20]	@ (8004db4 <TASK_3+0x4c>)
  8004d9e:	681b      	ldr	r3, [r3, #0]
  8004da0:	4618      	mov	r0, r3
@@ -14437,7 +14436,7 @@ void TASK_3(void *argument)
 	  osDelay(500);
  8004da6:	f44f 70fa 	mov.w	r0, #500	@ 0x1f4
  8004daa:	f7fc fe27 	bl	80019fc <osDelay>
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
  8004dae:	bf00      	nop
  8004db0:	e7de      	b.n	8004d70 <TASK_3+0x8>
  8004db2:	bf00      	nop

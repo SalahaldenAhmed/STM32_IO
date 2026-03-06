@@ -130,7 +130,6 @@ int main(void)
 
   osKernelInitialize();
 
-  /* creation of myMutex01 */
   myMutex01Handle = osMutexNew(&myMutex01_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -241,7 +240,6 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_TASK_1 */
 /**
 * @brief Function implementing the TASK1 thread.
 * @param argument: Not used
@@ -253,11 +251,11 @@ void TASK_1(void *argument)
   /* USER CODE BEGIN TASK_1 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"AM ", 3, 100);
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"SALAHALDEN\r\n", 12, 100);
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
 	  osDelay(500);
   }
   /* USER CODE END TASK_1 */
@@ -265,7 +263,6 @@ void TASK_1(void *argument)
 
 /* USER CODE BEGIN Header_TASK_2 */
 /**
-* @brief Function implementing the TASK2 thread.
 * @param argument: Not used
 * @retval None
 */
@@ -275,11 +272,11 @@ void TASK_2(void *argument)
   /* USER CODE BEGIN TASK_2 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"HEL", 3, 100);
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"LO!\r\n", 5, 100);
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
 	  osDelay(500);
   }
   /* USER CODE END TASK_2 */
@@ -297,11 +294,11 @@ void TASK_3(void *argument)
   /* USER CODE BEGIN TASK_3 */
   for(;;)
   {
-	  osMutexAcquire(myMutex01Handle, osWaitForever); /* LOCK   — comment this line to see corruption */
+	  osMutexAcquire(myMutex01Handle, osWaitForever);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"DO", 2, 100);
-	  osDelay(5);                                     /* yields CPU so other tasks can inject here  */
+	  osDelay(5);
 	  HAL_UART_Transmit(&huart1, (uint8_t*)"NE\r\n", 4, 100);
-	  osMutexRelease(myMutex01Handle);                /* UNLOCK — comment this line to see corruption */
+	  osMutexRelease(myMutex01Handle);
 	  osDelay(500);
   }
   /* USER CODE END TASK_3 */
