@@ -3042,19 +3042,19 @@ LOAD /opt/st/stm32cubeide_2.0.0_4/plugins/com.st.stm32cube.ide.mcu.externaltools
  .debug_macro   0x00016c1d      0x23c ./Src/sysmem.o
  .debug_macro   0x00016e59      0x198 ./Src/system_stm32f1xx.o
 
-.debug_line     0x00000000     0x8c64
+.debug_line     0x00000000     0x8c62
  .debug_line    0x00000000      0x8de ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
  .debug_line    0x000008de      0xaa8 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
  .debug_line    0x00001386      0x93b ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
  .debug_line    0x00001cc1      0xd97 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
  .debug_line    0x00002a58     0x1b75 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o
  .debug_line    0x000045cd     0x23fa ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.o
- .debug_line    0x000069c7      0x90e ./Src/main.o
- .debug_line    0x000072d5      0x6d0 ./Src/stm32f1xx_hal_msp.o
- .debug_line    0x000079a5      0x6d8 ./Src/stm32f1xx_it.o
- .debug_line    0x0000807d      0x4c7 ./Src/sysmem.o
- .debug_line    0x00008544      0x6a8 ./Src/system_stm32f1xx.o
- .debug_line    0x00008bec       0x78 ./Startup/startup_stm32f103c8tx.o
+ .debug_line    0x000069c7      0x90c ./Src/main.o
+ .debug_line    0x000072d3      0x6d0 ./Src/stm32f1xx_hal_msp.o
+ .debug_line    0x000079a3      0x6d8 ./Src/stm32f1xx_it.o
+ .debug_line    0x0000807b      0x4c7 ./Src/sysmem.o
+ .debug_line    0x00008542      0x6a8 ./Src/system_stm32f1xx.o
+ .debug_line    0x00008bea       0x78 ./Startup/startup_stm32f103c8tx.o
 
 .debug_str      0x00000000    0x83bc0
  .debug_str     0x00000000    0x83bc0 ./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o

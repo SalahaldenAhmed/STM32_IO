@@ -37,11 +37,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00016632  00000000  00000000  000093d7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000061fc  00000000  00000000  0001fa09  2**0
+ 17 .debug_line   000061fa  00000000  00000000  0001fa09  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00080be7  00000000  00000000  00025c05  2**0
+ 18 .debug_str    00080be7  00000000  00000000  00025c03  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000a67ec  2**0
+ 19 .comment      00000043  00000000  00000000  000a67ea  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00001620  00000000  00000000  000a6830  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -3496,10 +3496,10 @@ static HAL_StatusTypeDef SPI_EndRxTxTransaction(SPI_HandleTypeDef *hspi, uint32_
 	...
 
 08001480 <prepare_answer>:
-uint8_t tx_buf[BUF_SZ];   /* answer to send NEXT transaction */
-uint8_t rx_buf[BUF_SZ];   /* question received THIS transaction */
+uint8_t tx_buf[BUF_SZ];
+uint8_t rx_buf[BUF_SZ];
 
-/* Pre-load tx_buf based on the question just received in rx_buf */
+
 static void prepare_answer(void)
 {
  8001480:	b580      	push	{r7, lr}
@@ -3525,8 +3525,8 @@ static void prepare_answer(void)
  80014a2:	f000 f9c4 	bl	800182e <strncpy>
     else
     {
-        /* warmup packet or unknown — send zeros, master discards anyway */
-        memset(tx_buf, 0, BUF_SZ);
+
+    	memset(tx_buf, 0, BUF_SZ);
     }
 }
  80014a6:	e011      	b.n	80014cc <prepare_answer+0x4c>
@@ -3544,7 +3544,7 @@ static void prepare_answer(void)
  80014bc:	f000 f9b7 	bl	800182e <strncpy>
 }
  80014c0:	e004      	b.n	80014cc <prepare_answer+0x4c>
-        memset(tx_buf, 0, BUF_SZ);
+    	memset(tx_buf, 0, BUF_SZ);
  80014c2:	2214      	movs	r2, #20
  80014c4:	2100      	movs	r1, #0
  80014c6:	4802      	ldr	r0, [pc, #8]	@ (80014d0 <prepare_answer+0x50>)
@@ -3575,18 +3575,19 @@ int main(void)
     MX_SPI1_Init();
  80014fa:	f000 f863 	bl	80015c4 <MX_SPI1_Init>
 
-    /* tx_buf starts as zeros — sent during the warm-up round.
-       Master discards the warm-up reply, so content doesn't matter. */
+
+
+
     memset(tx_buf, 0, BUF_SZ);
  80014fe:	2214      	movs	r2, #20
  8001500:	2100      	movs	r1, #0
  8001502:	480a      	ldr	r0, [pc, #40]	@ (800152c <main+0x44>)
  8001504:	f000 f98b 	bl	800181e <memset>
-         *   - Receive:  rx_buf (the new question from master)
-         *
-         * HAL_SPI_TransmitReceive blocks until master clocks all
-         * BUF_SZ bytes. Both things happen at the same time.
-         * ============================================================ */
+
+    while (1)
+    {
+
+
         memset(rx_buf, 0, BUF_SZ);
  8001508:	2214      	movs	r2, #20
  800150a:	2100      	movs	r1, #0
@@ -3602,9 +3603,8 @@ int main(void)
  800151e:	4805      	ldr	r0, [pc, #20]	@ (8001534 <main+0x4c>)
  8001520:	f7ff fd4a 	bl	8000fb8 <HAL_SPI_TransmitReceive>
 
-        /* Decode the new question and load the answer into tx_buf.
-           This runs BETWEEN transactions (CS is HIGH, no clock).
-           100 ms window is enormous — strcmp + strncpy takes < 1 µs. */
+
+
         prepare_answer();
  8001524:	f7ff ffac 	bl	8001480 <prepare_answer>
         memset(rx_buf, 0, BUF_SZ);

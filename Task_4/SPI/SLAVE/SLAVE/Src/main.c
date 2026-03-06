@@ -9,10 +9,10 @@ static void MX_SPI1_Init(void);
 
 #define BUF_SZ 20
 
-uint8_t tx_buf[BUF_SZ];   /* answer to send NEXT transaction */
-uint8_t rx_buf[BUF_SZ];   /* question received THIS transaction */
+uint8_t tx_buf[BUF_SZ];
+uint8_t rx_buf[BUF_SZ];
 
-/* Pre-load tx_buf based on the question just received in rx_buf */
+
 static void prepare_answer(void)
 {
     memset(tx_buf, 0, BUF_SZ);
@@ -27,8 +27,8 @@ static void prepare_answer(void)
     }
     else
     {
-        /* warmup packet or unknown — send zeros, master discards anyway */
-        memset(tx_buf, 0, BUF_SZ);
+
+    	memset(tx_buf, 0, BUF_SZ);
     }
 }
 
@@ -39,27 +39,21 @@ int main(void)
     MX_GPIO_Init();
     MX_SPI1_Init();
 
-    /* tx_buf starts as zeros — sent during the warm-up round.
-       Master discards the warm-up reply, so content doesn't matter. */
+
+
+
     memset(tx_buf, 0, BUF_SZ);
 
     while (1)
     {
-        /* ============================================================
-         * ONE transaction:
-         *   - Transmit: tx_buf (answer to the previous question)
-         *   - Receive:  rx_buf (the new question from master)
-         *
-         * HAL_SPI_TransmitReceive blocks until master clocks all
-         * BUF_SZ bytes. Both things happen at the same time.
-         * ============================================================ */
+
+
         memset(rx_buf, 0, BUF_SZ);
 
         HAL_SPI_TransmitReceive(&hspi1, tx_buf, rx_buf, BUF_SZ, HAL_MAX_DELAY);
 
-        /* Decode the new question and load the answer into tx_buf.
-           This runs BETWEEN transactions (CS is HIGH, no clock).
-           100 ms window is enormous — strcmp + strncpy takes < 1 µs. */
+
+
         prepare_answer();
     }
 }

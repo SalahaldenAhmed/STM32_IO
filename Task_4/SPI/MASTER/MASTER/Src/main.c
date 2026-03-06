@@ -41,12 +41,7 @@ int main(void)
 
     uint8_t tx[BUF_SZ], rx[BUF_SZ];
 
-    /* ------------------------------------------------------------------ *
-     * WARM-UP ROUND — prime the slave pipeline.                          *
-     * Slave receives "warmup", loads its default/unknown answer,         *
-     * and is now ready for real questions.                               *
-     * We discard whatever we receive here.                               *
-     * ------------------------------------------------------------------ */
+
     memset(tx, 0, BUF_SZ);
     memset(rx, 0, BUF_SZ);
     strncpy((char*)tx, "warmup", BUF_SZ);
@@ -55,14 +50,12 @@ int main(void)
     HAL_SPI_TransmitReceive(&hspi1, tx, rx, BUF_SZ, 500);
     CS_HIGH();
 
-    HAL_Delay(100); /* slave processes "warmup", loads answer, awaits next */
+    HAL_Delay(100);
 
-    /* ------------------------------------------------------------------ *
-     * MAIN LOOP                                                           *
-     * Each iteration sends question[i] and receives the answer to the    *
-     * question sent in the PREVIOUS iteration.                            *
-     * ------------------------------------------------------------------ */
-    int prev  = -1;   /* index of the question sent last round */
+
+
+    int prev  = -1;
+
 
     while (1)
     {
@@ -76,7 +69,6 @@ int main(void)
             HAL_SPI_TransmitReceive(&hspi1, tx, rx, BUF_SZ, 500);
             CS_HIGH();
 
-            /* Evaluate the answer received (it answers the PREVIOUS question) */
             if (prev >= 0)
             {
                 const char *result =
@@ -90,7 +82,7 @@ int main(void)
             }
 
             prev = i;
-            HAL_Delay(1000); /* slave processes question, loads answer */
+            HAL_Delay(1000);
         }
     }
 }
