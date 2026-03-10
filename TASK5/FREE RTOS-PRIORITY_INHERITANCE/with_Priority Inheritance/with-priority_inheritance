@@ -1,20 +1,3 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -41,16 +24,41 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim4;
-
 UART_HandleTypeDef huart1;
 
-osThreadId defaultTaskHandle;
-osThreadId myTask01Handle;
-osThreadId myTask02Handle;
-osThreadId myTask03Handle;
-osMutexId uartmutexHandle;
-osSemaphoreId feedbacksemHandle;
+/* Definitions for defaultTask */
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Task1 */
+osThreadId_t Task1Handle;
+const osThreadAttr_t Task1_attributes = {
+  .name = "Task1",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for Task2 */
+osThreadId_t Task2Handle;
+const osThreadAttr_t Task2_attributes = {
+  .name = "Task2",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for Task3 */
+osThreadId_t Task3Handle;
+const osThreadAttr_t Task3_attributes = {
+  .name = "Task3",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityHigh,
+};
+/* Definitions for UARTMUTEX */
+osMutexId_t UARTMUTEXHandle;
+const osMutexAttr_t UARTMUTEX_attributes = {
+  .name = "UARTMUTEX"
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -59,11 +67,10 @@ osSemaphoreId feedbacksemHandle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_TIM4_Init(void);
-void StartDefaultTask(void const * argument);
-void input_data(void const * argument);
-void servo_cotrol(void const * argument);
-void feedback(void const * argument);
+void StartDefaultTask(void *argument);
+void Task_1(void *argument);
+void Task_2(void *argument);
+void Task_3(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -71,7 +78,6 @@ void feedback(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int last =0;
 
 /* USER CODE END 0 */
 
@@ -105,24 +111,19 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
   /* Create the mutex(es) */
-  /* definition and creation of uartmutex */
-  osMutexDef(uartmutex);
-  uartmutexHandle = osMutexCreate(osMutex(uartmutex));
+  /* creation of UARTMUTEX */
+  UARTMUTEXHandle = osMutexNew(&UARTMUTEX_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
-
-  /* Create the semaphores(s) */
-  /* definition and creation of feedbacksem */
-  osSemaphoreDef(feedbacksem);
-  feedbacksemHandle = osSemaphoreCreate(osSemaphore(feedbacksem), 1);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
@@ -137,25 +138,25 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* creation of defaultTask */
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* definition and creation of myTask01 */
-  osThreadDef(myTask01, input_data, osPriorityNormal, 0, 128);
-  myTask01Handle = osThreadCreate(osThread(myTask01), NULL);
+  /* creation of Task1 */
+  Task1Handle = osThreadNew(Task_1, NULL, &Task1_attributes);
 
-  /* definition and creation of myTask02 */
-  osThreadDef(myTask02, servo_cotrol, osPriorityHigh, 0, 128);
-  myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
+  /* creation of Task2 */
+  Task2Handle = osThreadNew(Task_2, NULL, &Task2_attributes);
 
-  /* definition and creation of myTask03 */
-  osThreadDef(myTask03, feedback, osPriorityLow, 0, 128);
-  myTask03Handle = osThreadCreate(osThread(myTask03), NULL);
+  /* creation of Task3 */
+  Task3Handle = osThreadNew(Task_3, NULL, &Task3_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
   osKernelStart();
@@ -169,10 +170,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(HAL_GetTick()-last>=500){
-		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-		 last= HAL_GetTick();
-	  }
+
   }
   /* USER CODE END 3 */
 }
@@ -214,65 +212,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief TIM4 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM4_Init(void)
-{
-
-  /* USER CODE BEGIN TIM4_Init 0 */
-
-  /* USER CODE END TIM4_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM4_Init 1 */
-
-  /* USER CODE END TIM4_Init 1 */
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 71;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 19999;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM4_Init 2 */
-
-  /* USER CODE END TIM4_Init 2 */
-  HAL_TIM_MspPostInit(&htim4);
-
 }
 
 /**
@@ -324,7 +263,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
@@ -352,74 +290,62 @@ static void MX_GPIO_Init(void)
   * @retval None
   */
 /* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	  int last =0;
-
   /* Infinite loop */
   for(;;)
   {
-	  if(HAL_GetTick()-last>=500){
-	 		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-	 		 last= HAL_GetTick();  }
+    osDelay(1);
+  }
   /* USER CODE END 5 */
 }
-}
 
-/* USER CODE BEGIN Header_input_data */
+/* USER CODE BEGIN Header_Task_1 */
 /**
-* @brief Function implementing the myTask01 thread.
+* @brief Function implementing the Task1 thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_input_data */
-void input_data(void const * argument)
-{
-  /* USER CODE BEGIN input_data */
-  /* Infinite loop */
-  for(;;)
-  {
-	  osMutexWait(mutex_id, millisec)
-    osDelay(1);
+/* USER CODE END Header_Task_1 */
+// LOW PRIORITY TASK
+void Task_1(void *argument) {
+  char buf[] = "Low Task: Holding Mutex...\r\n";
+  for(;;) {
+    osMutexAcquire(UARTMUTEXHandle, osWaitForever);
+    HAL_UART_Transmit(&huart1, (uint8_t*)buf, strlen(buf), 100);
+
+    HAL_Delay(3000);
+
+    HAL_UART_Transmit(&huart1, (uint8_t*)"Low Task: Releasing!\r\n", 22, 100);
+    osMutexRelease(UARTMUTEXHandle);
+    osDelay(1000);
   }
-  /* USER CODE END input_data */
 }
 
-/* USER CODE BEGIN Header_servo_cotrol */
-/**
-* @brief Function implementing the myTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_servo_cotrol */
-void servo_cotrol(void const * argument)
-{
-  /* USER CODE BEGIN servo_cotrol */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+void Task_2(void *argument) {
+  osDelay(500);
+
+  for(;;) {
+    HAL_UART_Transmit(&huart1, (uint8_t*)"Medium Task: HOGGING CPU...\r\n", 29, 100);
+    for(volatile uint32_t i = 0; i < 30000000; i++) {
+        __asm("NOP");
+    }
+    HAL_UART_Transmit(&huart1, (uint8_t*)"Medium Task: Done.\r\n", 20, 100);
+    osDelay(5000);
   }
-  /* USER CODE END servo_cotrol */
 }
 
-/* USER CODE BEGIN Header_feedback */
-/**
-* @brief Function implementing the myTask03 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_feedback */
-void feedback(void const * argument)
-{
-  /* USER CODE BEGIN feedback */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
+// HIGH PRIORITY TASK
+void Task_3(void *argument) {
+  osDelay(1000);
+  char buf[] = "High Task: Success!\r\n";
+  for(;;) {
+    osMutexAcquire(UARTMUTEXHandle, osWaitForever);
+    HAL_UART_Transmit(&huart1, (uint8_t*)buf, strlen(buf), 100);
+    osMutexRelease(UARTMUTEXHandle);
+    osDelay(500);
   }
-  /* USER CODE END feedback */
 }
 
 /**
@@ -474,4 +400,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
